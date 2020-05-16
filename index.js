@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
 const path = require("path");
+const serveStatic = require("serve-static");
 
 const server = express();
 
@@ -25,6 +26,12 @@ let transporter = nodemailer.createTransport({
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS
   }
+});
+
+server.use("/", serveStatic(path.join(__dirname, "/dist")));
+// this * route is to serve project on different page routes except root `/`
+server.get(/.*/, function(req, res) {
+  res.sendFile(path.join(__dirname, "/dist/index.html"));
 });
 
 server.post("/send-verify-mail", (req, res) => {
